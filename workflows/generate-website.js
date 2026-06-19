@@ -16,11 +16,13 @@ export async function generateWebsiteWorkflow(input) {
   try {
     const crawl = await crawlWebsiteStep(input);
     const generation = await startV0GenerationStep(input, crawl);
-    const completed = await waitForV0Completion(
-      generation.chatId,
-      input.pollIntervalSeconds,
-      input.maxPollAttempts,
-    );
+    const completed = generation.demoUrl
+      ? generation
+      : await waitForV0Completion(
+        generation.chatId,
+        input.pollIntervalSeconds,
+        input.maxPollAttempts,
+      );
 
     await sendSuccessCallbackStep(input, crawl, completed);
 
