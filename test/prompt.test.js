@@ -16,7 +16,7 @@ test('combines instructions, JSON inputs, additional texts, and crawl content', 
     },
     {
       pages: [{ url: 'https://example.com', text: 'Current copy' }],
-      images: [],
+      images: [{ url: 'https://example.com/foto.jpg', alt: 'Foto' }],
     },
   );
 
@@ -25,7 +25,8 @@ test('combines instructions, JSON inputs, additional texts, and crawl content', 
   assert.match(prompt, /Weitere Texte/);
   assert.match(prompt, /Quality first/);
   assert.match(prompt, /Marken-Logo/);
-  assert.match(prompt, /Current copy/);
+  assert.match(prompt, /example\.com\/foto\.jpg/);
+  assert.doesNotMatch(prompt, /Current copy/);
 });
 
 test('prioritizes likely logos and caps v0 image attachments', () => {
