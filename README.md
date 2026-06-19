@@ -129,6 +129,25 @@ Vercel Workflow uebernimmt Queueing, Retries, Schlafphasen beim v0-Polling und
 Observability. Ein offener HTTP-Request muss dadurch nicht mehrere Minuten
 leben.
 
+## Logo-Cleanup
+
+Jeder Job laedt das uebergebene Logo in den Blob Store. Damit dieser nicht
+unbegrenzt waechst, loescht ein taeglicher Cron alte Logos:
+
+- Endpunkt: `GET /api/cleanup`
+- Zeitplan: `vercel.json` (`0 3 * * *`, taeglich 03:00 UTC)
+- Geschuetzt ueber `CRON_SECRET` (Vercel sendet `Authorization: Bearer <CRON_SECRET>`).
+- Aufbewahrung: `BLOB_RETENTION_DAYS` (Default 7). Aeltere Logos werden entfernt.
+
+Der Endpunkt laesst sich auch manuell aufrufen:
+
+```http
+GET /api/cleanup
+Authorization: Bearer <CRON_SECRET>
+```
+
+Antwort: `{ "success": true, "scanned": <n>, "deleted": <n>, "retentionDays": <n> }`.
+
 ## Lokal
 
 Ein lokal installiertes Chrome oder Chromium kann ohne Remote-Pack verwendet
