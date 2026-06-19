@@ -37,10 +37,13 @@ export async function generateWebsiteWorkflow(input) {
 }
 
 async function waitForV0Completion(chatId, pollInterval, maxAttempts) {
+  let lastStatus = null;
+
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     const status = await getV0StatusStep(chatId);
+    lastStatus = status;
 
-    if (status.status === 'completed' && status.demoUrl) {
+    if (status.demoUrl) {
       return status;
     }
 
@@ -52,7 +55,10 @@ async function waitForV0Completion(chatId, pollInterval, maxAttempts) {
   }
 
   throw new FatalError(
-    `v0 generation did not complete after ${maxAttempts} status checks.`,
+    `v0 generation did not complete after ${maxAttempts} status checks `
+    + `(last status: ${lastStatus?.status ?? 'unknown'}, `
+    + `demoUrl: ${lastStatus?.demoUrl ?? 'none'}, `
+    + `webUrl: ${lastStatus?.webUrl ?? 'none'}).`,
   );
 }
 
